@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chatbox {
+            width: 70%; /* Adjust width as needed */
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow-y: scroll; /* Enable scrolling for messages */
+            height: 400px; /* Adjust height as needed */
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            overflow-wrap: break-word;
+        }
+
+        .user {
+            background-color:  #cb3727;
+            color: #fff;
+            text-align: right;
+            border-top-right-radius: 0;
+        }
+
+        .bot {
+            background-color: #f0f0f0;
+            color: #000;
+            text-align: left;
+            border-top-left-radius: 0;
+        }
+
+        .input-area {
+            display: flex;
+            width: 70%; /* Adjust width as needed to match chatbox */
+            max-width: 800px;
+            margin: 10px auto 0; /* Adjust margins as needed */
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 14px; /* Adjust font size as needed */
+        }
+
+        .input-area button {
+            padding: 10px;
+            background-color:  #cb3727;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px; /* Adjust font size as needed */
+        }
+
+        .input-area button:hover {
+            background-color:  #57647a;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbox" id="chatbox">
+        <!-- Messages will be dynamically added here -->
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Type your message here..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById("userInput").value;
+            if (userInput.trim() === "") return;
+
+            var chatbox = document.getElementById("chatbox");
+
+            // User message
+            var userMessageDiv = document.createElement("div");
+            userMessageDiv.className = "message user";
+            userMessageDiv.textContent = userInput;
+            chatbox.appendChild(userMessageDiv);
+
+            // Scroll to bottom
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Fetch response from server
+            fetch(`/get?msg=${encodeURIComponent(userInput)}`)
+                .then(response => response.text())
+                .then(data => {
+                    // Bot message
+                    var botMessageDiv = document.createElement("div");
+                    botMessageDiv.className = "message bot";
+                    chatbox.appendChild(botMessageDiv);
+
+                    // Typewriter effect
+                    let index = 0;
+                    function typeWriter() {
+                        if (index < data.length) {
+                            botMessageDiv.textContent += data.charAt(index);
+                            index++;
+                            setTimeout(typeWriter, 50); // Adjust typing speed here
+                        }
+                    }
+                    typeWriter();
+
+                    // Scroll to bottom
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                });
+
+            // Clear input
+            document.getElementById("userInput").value = "";
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
